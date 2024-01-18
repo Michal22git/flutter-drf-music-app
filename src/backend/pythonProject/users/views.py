@@ -31,14 +31,12 @@ class Register(generics.CreateAPIView):
         if serializer.is_valid():
             user = User.objects.create_user(
                 username=serializer.validated_data['username'],
-                email=serializer.validated_data['email'],
                 password=serializer.validated_data['password']
             )
 
             response_data = {
                 "data": {
-                    "username": user.username,
-                    "email": user.email
+                    "username": user.username
                 }
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
