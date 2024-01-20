@@ -7,8 +7,6 @@ enum SnackBarType {
 }
 
 void showSnackBar(BuildContext context, SnackBarType snackBarType, String message) {
-  double screenWidth = MediaQuery.of(context).size.width;
-  double snackBarWidth = screenWidth * 0.5;
 
   Color snackBarColor;
 
@@ -27,19 +25,13 @@ void showSnackBar(BuildContext context, SnackBarType snackBarType, String messag
   final snackBar = SnackBar(
     content: SafeArea(
       child: Container(
-        width: snackBarWidth,
         alignment: Alignment.topCenter,
         child: Text(message),
       ),
     ),
     backgroundColor: snackBarColor,
-    dismissDirection: DismissDirection.up,
     behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.only(
-      bottom: MediaQuery.of(context).size.height - 50,
-      left: (screenWidth - snackBarWidth) / 2,
-      right: (screenWidth - snackBarWidth) / 2,
-    ),
   );
+
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }

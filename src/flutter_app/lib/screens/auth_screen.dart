@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../helpers/auth_helper.dart';
-import 'profile_screen.dart';
+import 'home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }
@@ -31,7 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (loggedIn) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     }
   }
@@ -39,30 +41,89 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isLoginMode ? 'Log In' : 'Register'),
-        actions: [
-          TextButton(
-            onPressed: switchAuthMode,
-            child: Text(isLoginMode ? 'Switch to Register' : 'Switch to Log In'),
-          ),
-        ],
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              "Welcome back",
+              style: TextStyle(
+                fontSize: 25.0,
+                color: Color.fromRGBO(179, 179, 179, 1.0),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isLoginMode = true;
+                    });
+                  },
+                  child: Text(
+                    "Log In",
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      color: isLoginMode
+                          ? const Color.fromRGBO(29, 185, 84, 1.0)
+                          : const Color.fromRGBO(179, 179, 179, 1.0),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isLoginMode = false;
+                    });
+                  },
+                  child: Text(
+                    "Register",
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      color: !isLoginMode
+                          ? const Color.fromRGBO(29, 185, 84, 1.0)
+                          : const Color.fromRGBO(179, 179, 179, 1.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Username',
+                labelStyle: TextStyle(color: Colors.white),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
             ),
+            const SizedBox(height: 10),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                labelStyle: TextStyle(color: Colors.white),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 try {
@@ -74,10 +135,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     );
 
                     if (token == 'success') {
-                      print('Logged in. Token: $token');
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => ProfileScreen()),
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     }
                   } else {
@@ -95,7 +155,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   print('${isLoginMode ? 'Login' : 'Registration'} failed: $e');
                 }
               },
-              child: Text(isLoginMode ? 'Log In' : 'Register'),
+              child: const Text(
+                  "Submit",
+                  style: TextStyle(color: Color.fromRGBO(33, 33, 33, 1.0)),
+              ),
             ),
           ],
         ),
