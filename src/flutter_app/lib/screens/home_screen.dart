@@ -15,13 +15,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Add this line to store the selected index
+  int _selectedIndex = 0;
 
   final AuthHelper authHelper = AuthHelper();
 
   void _onTabTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Update the local variable instead
+      _selectedIndex = index;
     });
   }
 
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return MusicScreen();
       case 1:
-        return PlaylistScreen();
+        return PlaylistScreen(onTabTapped: _onTabTapped);
       case 2:
         return ProfileScreen();
       default:

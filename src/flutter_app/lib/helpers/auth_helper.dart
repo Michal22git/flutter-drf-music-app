@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/api.dart';
 import 'package:flutter/material.dart';
 import '../utils/snackbar_utils.dart';
+import '../screens/auth_screen.dart';
 
 
 class AuthHelper {
@@ -73,6 +74,10 @@ class AuthHelper {
         print('Error $e');
       } finally {
         prefs.remove('token');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AuthScreen()),
+        );
         showSnackBar(context, SnackBarType.Information, "Logged out");
       }
     }

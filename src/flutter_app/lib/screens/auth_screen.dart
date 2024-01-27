@@ -100,7 +100,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 labelText: 'Username',
                 labelStyle: TextStyle(color: Colors.white),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -115,7 +115,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 labelText: 'Password',
                 labelStyle: TextStyle(color: Colors.white),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
