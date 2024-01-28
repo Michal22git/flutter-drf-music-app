@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../helpers/auth_helper.dart';
 import '../../helpers/request_helper.dart';
 import '../../utils/snackbar_utils.dart';
+import 'selected_playlist_screen.dart';
 
 class PlaylistScreen extends StatefulWidget {
   final AuthHelper authHelper = AuthHelper();
@@ -42,7 +43,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Playlist',
+          'Playlists',
           style: TextStyle(
             color: Color.fromRGBO(29, 185, 84, 1.0),
           ),
@@ -69,52 +70,70 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
             final songsCount = playlist['songs_count'];
             final totalTime = playlist['total_time'];
 
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: const Color.fromRGBO(29, 185, 84, 1.0),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Songs Count: $songsCount',
-                        style: const TextStyle(
-                          color: Color.fromRGBO(179, 179, 179, 1.0),
-                        ),
-                      ),
-                      Text(
-                        'Total Time: $totalTime',
-                        style: const TextStyle(
-                          color: Color.fromRGBO(179, 179, 179, 1.0),
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Color.fromRGBO(179, 179, 179, 1.0),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SpecifiedPlaylistScreen(
+                      key: Key('specifiedPlaylistScreen'),
+                      playlistId: id.toString(),
+                      onRefresh: () async {
+                        await _fetchPlaylistData();
+                        setState(() {});
+                      },
                     ),
-                    onPressed: () {
-                      _showDeleteDialog(context, id);
-                    },
                   ),
-                ],
+                );
+              },
+
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color.fromRGBO(29, 185, 84, 1.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'Songs Count: $songsCount',
+                          style: const TextStyle(
+                            color: Color.fromRGBO(179, 179, 179, 1.0),
+                          ),
+                        ),
+                        Text(
+                          'Total Time: $totalTime',
+                          style: const TextStyle(
+                            color: Color.fromRGBO(179, 179, 179, 1.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Color.fromRGBO(179, 179, 179, 1.0),
+                      ),
+                      onPressed: () {
+                        _showDeleteDialog(context, id);
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           },
