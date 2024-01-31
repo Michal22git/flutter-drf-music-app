@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/api.dart';
@@ -30,6 +31,29 @@ class RequestHelper {
       headers: _getHeaders(token),
     );
     return _parseResponse(response);
+  }
+
+  Future<dynamic> uploadMP3File(String path, {File? file}) async {
+    final token = await _getToken();
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
+        ..headers.addAll(_getHeaders(token))
+        ..files.add(
+          await http.MultipartFile.fromPath(
+            'mp3_file',
+            file!.path,
+            filename: file.path.split('/').last,
+          ),
+        );
+
+      var response = await request.send();
+
+      return _parseResponse(await http.Response.fromStream(response));
+    } catch (e) {
+      print('Error uploading MP3 file: $e');
+      throw e;
+    }
   }
 
   Future<dynamic> sendDeleteRequest(String path) async {
