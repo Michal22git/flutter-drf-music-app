@@ -23,7 +23,7 @@ class _MusicScreenState extends State<MusicScreen> {
   Future<void> _fetchMusicData() async {
     try {
       final response = await RequestHelper().sendGetRequest('api/app/music/');
-
+      print(response);
       if (response is List<dynamic>) {
         setState(() {
           musicData = response.cast<Map<String, dynamic>>();

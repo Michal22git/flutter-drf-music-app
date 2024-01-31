@@ -3,7 +3,6 @@ import '../../helpers/request_helper.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../utils/snackbar_utils.dart';
 
-
 class SpecifiedPlaylistScreen extends StatefulWidget {
   final String playlistId;
   final Function onRefresh;
@@ -17,11 +16,13 @@ class SpecifiedPlaylistScreen extends StatefulWidget {
 
 class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
   Map<String, dynamic>? playlistData;
+  List<Map<String, dynamic>>? availableSongs;
 
   @override
   void initState() {
     super.initState();
     _fetchSpecifiedPlaylistData();
+    _fetchAvailableSongs();
   }
 
   Future<void> _fetchSpecifiedPlaylistData() async {
@@ -39,12 +40,25 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
     }
   }
 
+  Future<void> _fetchAvailableSongs() async {
+    try {
+      final response = await RequestHelper().sendGetRequest('api/app/music/');
+      if (response is List<dynamic>) {
+        setState(() {
+          availableSongs = response.cast<Map<String, dynamic>>();
+        });
+      }
+    } catch (e) {
+      print('Error fetching available songs: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Color.fromRGBO(29, 185, 84, 1.0),
           ),
@@ -59,7 +73,7 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
               color: Color.fromRGBO(179, 179, 179, 1.0),
             ),
             onPressed: () {
-
+              _showAddToPlaylistDialog(context);
             },
           ),
         ],
@@ -135,6 +149,70 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
     );
   }
 
+  void _showAddToPlaylistDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Align(
+            alignment: Alignment.center,
+            child: Text('Add Songs to Playlist'),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            height: 200,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: availableSongs!.length,
+                    itemBuilder: (context, index) {
+                      final music = availableSongs![index];
+                      final title = music['title'];
+                      return ListTile(
+                        title: Text(title),
+                        onTap: () {
+                          _addToPlaylist(context, music['id']);
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  void _addToPlaylist(BuildContext context, int songId) async {
+    try {
+      final response = await RequestHelper().sendPatchRequest(
+        'api/app/playlist/${widget.playlistId}/add/$songId/',
+      );
+
+      if (response != null && response.containsKey('id')) {
+        showSnackBar(context, SnackBarType.Success, 'Song added successfully');
+
+        setState(() {
+          playlistData = response;
+        });
+      } else if (response != null && response.containsKey('error')) {
+        showSnackBar(context, SnackBarType.Error, response['error']);
+      } else {
+        showSnackBar(context, SnackBarType.Error, 'Failed to add the song');
+      }
+    } catch (e) {
+      print('Error adding song to playlist: $e');
+    }
+  }
+
   void _showDeleteDialog(BuildContext context, int id) {
     showDialog(
       context: context,
@@ -163,7 +241,6 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
                     } else if (response != null && response.containsKey('message')) {
                       showSnackBar(context, SnackBarType.Success, response['message']);
                       Navigator.of(context).pop();
-
                       _fetchSpecifiedPlaylistData();
                     }
                   } catch (e) {

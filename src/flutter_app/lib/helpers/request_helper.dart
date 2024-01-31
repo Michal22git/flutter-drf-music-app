@@ -24,7 +24,7 @@ class RequestHelper {
     return _parseResponse(response);
   }
 
-  Future<dynamic> sendPatchRequest(String path, Map<String, dynamic> body) async {
+  Future<dynamic> sendPatchRequest(String path) async {
     final token = await _getToken();
     final response = await http.patch(
       Uri.parse('$baseUrl$path'),
