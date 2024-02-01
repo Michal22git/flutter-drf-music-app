@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../helpers/request_helper.dart';
 import '../../utils/snackbar_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'dart:io';
 
 class MusicScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class MusicScreen extends StatefulWidget {
 
 class _MusicScreenState extends State<MusicScreen> {
   List<Map<String, dynamic>>? musicData;
+  final _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -23,7 +25,6 @@ class _MusicScreenState extends State<MusicScreen> {
   Future<void> _fetchMusicData() async {
     try {
       final response = await RequestHelper().sendGetRequest('api/app/music/');
-      print(response);
       if (response is List<dynamic>) {
         setState(() {
           musicData = response.cast<Map<String, dynamic>>();
@@ -69,7 +70,7 @@ class _MusicScreenState extends State<MusicScreen> {
 
             return GestureDetector(
               onTap: () {
-
+                _playMusic(mp3File);
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -118,6 +119,16 @@ class _MusicScreenState extends State<MusicScreen> {
         ),
       ),
     );
+  }
+
+  void _playMusic(String mp3Url) async {
+    if (mp3Url.isNotEmpty) {
+      try {
+        await _audioPlayer.play(UrlSource(mp3Url));
+      } catch (e) {
+        print("Error playing music: $e");
+      }
+    }
   }
 
   void _showAddItemDialog(BuildContext context) {

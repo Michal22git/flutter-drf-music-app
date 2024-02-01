@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../helpers/request_helper.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../utils/snackbar_utils.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class SpecifiedPlaylistScreen extends StatefulWidget {
   final String playlistId;
@@ -17,6 +18,7 @@ class SpecifiedPlaylistScreen extends StatefulWidget {
 class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
   Map<String, dynamic>? playlistData;
   List<Map<String, dynamic>>? availableSongs;
+  final _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -29,7 +31,6 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
     try {
       final response =
       await RequestHelper().sendGetRequest('api/app/playlist/${widget.playlistId}/');
-
       if (response is Map<String, dynamic>) {
         setState(() {
           playlistData = response;
@@ -103,39 +104,44 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
               itemCount: playlistData!['songs'].length,
               itemBuilder: (context, index) {
                 var song = playlistData!['songs'][index];
-                return Container(
-                  padding: EdgeInsets.all(16),
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Color.fromRGBO(29, 185, 84, 1.0)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Title: ${song['title']}',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                          Text(
-                            'Time: ${song['time']}',
-                            style: TextStyle(color: Color.fromRGBO(179, 179, 179, 1.0)),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Color.fromRGBO(179, 179, 179, 1.0),
+                return GestureDetector(
+                  onTap: () {
+                    _playMusic(song['mp3_file']);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Color.fromRGBO(29, 185, 84, 1.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Title: ${song['title']}',
+                              style: TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                            Text(
+                              'Time: ${song['time']}',
+                              style: TextStyle(color: Color.fromRGBO(179, 179, 179, 1.0)),
+                            ),
+                          ],
                         ),
-                        onPressed: () {
-                          _showDeleteDialog(context, song['id']);
-                        },
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Color.fromRGBO(179, 179, 179, 1.0),
+                          ),
+                          onPressed: () {
+                            _showDeleteDialog(context, song['id']);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -143,10 +149,20 @@ class SpecifiedPlaylistScreenState extends State<SpecifiedPlaylistScreen> {
           ],
         ),
       )
-          : Center(
+          : const Center(
         child: CircularProgressIndicator(),
       ),
     );
+  }
+
+  void _playMusic(String mp3Url) async {
+    if (mp3Url.isNotEmpty) {
+      try {
+        await _audioPlayer.play(UrlSource(mp3Url));
+      } catch (e) {
+        print("Error playing music: $e");
+      }
+    }
   }
 
   void _showAddToPlaylistDialog(BuildContext context) {
