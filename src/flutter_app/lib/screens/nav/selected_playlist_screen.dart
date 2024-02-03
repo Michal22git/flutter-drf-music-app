@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../helpers/request_helper.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../utils/snackbar_utils.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class SpecifiedPlaylistScreen extends StatefulWidget {
   final String playlistId;
